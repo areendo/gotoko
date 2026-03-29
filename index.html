@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="bg-white p-4 shadow">
+<h1 class="text-xl font-bold">🛒 GoToko</h1>
+</div>
+
+<div id="products" class="p-4 grid grid-cols-2 gap-3"></div>
+
+<script>
+let products=[]
+
+async function load(){
+const res=await fetch('/api/products')
+products=await res.json()
+
+productsEl.innerHTML=''
+
+products.forEach(p=>{
+productsEl.innerHTML+=`
+<div class="bg-white p-3 rounded shadow">
+<img src="${p.image}" class="h-32 w-full object-cover rounded">
+<h2>${p.name}</h2>
+<p>Rp ${p.price}</p>
+</div>`
+})
+}
+
+load()
+</script>
+
+</body>
+</html>

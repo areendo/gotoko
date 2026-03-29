@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-4">
+
+<h1 class="text-xl font-bold mb-3">Dashboard</h1>
+
+<div class="bg-white p-4 rounded shadow space-y-2">
+
+<input id="name" placeholder="Nama" class="input">
+<input id="price" placeholder="Harga" class="input">
+<input id="stock" placeholder="Stock" class="input">
+
+<select id="categorySelect" class="input"></select>
+<input id="newCategory" placeholder="Kategori baru" class="input hidden">
+
+<input id="imageFile" type="file" class="input">
+
+<button onclick="addProduct()" class="btn">Tambah</button>
+</div>
+
+<div id="list" class="mt-4 space-y-2"></div>
+
+<!-- modal -->
+<div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+<div class="bg-white p-4 rounded w-80 space-y-2">
+
+<input id="e_name" class="input">
+<input id="e_price" class="input">
+<input id="e_stock" class="input">
+<input id="e_category" class="input">
+<input id="e_image" type="file" class="input">
+
+<button onclick="saveEdit()" class="btn">Simpan</button>
+</div>
+</div>
+
+<style>
+.input{width:100%;border:1px solid #ddd;padding:10px;border-radius:10px;}
+.btn{background:#16a34a;color:white;padding:10px;border-radius:10px;width:100%;}
+</style>
+
+<script>
+
+let editId=0
+let editImage=""
+
+async function loadCategories(){
+const res=await fetch('/api/categories')
+const data=await res.json()
+
+categorySelect.innerHTML=''
+data.forEach(c=>{
+categorySelect.innerHTML+=`<option>${c}</option>`
+})
+categorySelect.innerHTML+=`<option value="__new">+ baru</option>`
+}
+
+async function load(){
+const res=await fetch('/api/products')
+const data=await res.json()
+
+list.innerHTML=''
+
+data.forEach(p=>{
+list.innerHTML+=`
+<div class="bg-white p-3 rounded shadow flex justify-between">
+${p.name}
+<div>
+<button onclick='edit(${JSON.stringify(p)})'>edit</button>
+<button onclick="del(${p.id})">hapus</button>
+</div>
+</div>`
+})
+}
+
+async function addProduct(){
+let category=categorySelect.value
+if(category==="__new") category=newCategory.value
+
+let file=imageFile.files[0]
+let img=""
+
+if(file){
+let fd=new FormData()
+fd.append("image",file)
+let res=await fetch('/api/upload',{method:'POST',body:fd})
+let d=await res.json()
+img=d.url
+}
+
+let body=new URLSearchParams()
+body.append("name",name.value)
+body.append("price",price.value)
+body.append("stock",stock.value)
+body.append("category",category)
+body.append("image",img)
+
+await fetch('/api/create',{method:'POST',body})
+load()
+}
+
+function edit(p){
+editId=p.id
+editImage=p.image
+
+e_name.value=p.name
+e_price.value=p.price
+e_stock.value=p.stock
+e_category.value=p.category
+
+modal.classList.remove('hidden')
+}
+
+async function saveEdit(){
+
+let file=e_image.files[0]
+if(file){
+let fd=new FormData()
+fd.append("image",file)
+let res=await fetch('/api/upload',{method:'POST',body:fd})
+let d=await res.json()
+editImage=d.url
+}
+
+let body=new URLSearchParams()
+body.append("id",editId)
+body.append("name",e_name.value)
+body.append("price",e_price.value)
+body.append("stock",e_stock.value)
+body.append("category",e_category.value)
+body.append("image",editImage)
+
+await fetch('/api/update-product',{method:'POST',body})
+
+modal.classList.add('hidden')
+load()
+}
+
+async function del(id){
+let body=new URLSearchParams()
+body.append("id",id)
+await fetch('/api/delete',{method:'POST',body})
+load()
+}
+
+load()
+loadCategories()
+
+</script>
+
+</body>
+</html>

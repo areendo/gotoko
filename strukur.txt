@@ -1,0 +1,9 @@
+gotoko/
+│
+├── main.go
+├── index.html
+├── login.html
+├── dashboard.html
+│
+├── uploads/      ← otomatis dibuat
+├── toko.db       ← otomatis dibuat
