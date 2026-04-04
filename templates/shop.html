@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1>🛍️ Toko</h1>
+
+    <div class="row">
+        {{ range . }}
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>{{ .Name }}</h5>
+                    <p>Rp {{ .Price }}</p>
+
+                    <a href="/checkout" class="btn btn-success">Beli</a>
+                </div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+
+</body>
+</html>
