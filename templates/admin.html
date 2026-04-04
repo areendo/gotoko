@@ -12,14 +12,14 @@
     <a href="/admin/add" class="btn btn-primary mb-3">+ Tambah Produk</a>
 
     <ul>
-        {{ range . }}
+        {{ range .Products }}
         <li>
             {{ .Name }} - Rp {{ .Price }}
 
             <a href="/admin/edit?id={{ .ID }}">Edit</a>
             <a href="/admin/delete?id={{ .ID }}">Delete</a>
         </li>
-        {{ end }}
+        {{ else }}
     </ul>
 </div>
 
